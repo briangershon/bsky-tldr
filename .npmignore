@@ -1,0 +1,5 @@
+src
+.github
+.nvmrc
+tsconfig.json
+.prettierrc

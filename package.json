@@ -1,0 +1,44 @@
+{
+  "name": "bsky-tldr",
+  "description": "A JavaScript package for creating daily summary of Bluesky posts for those you follow.",
+  "version": "1.0.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/briangershon/bsky-tldr.git"
+  },
+  "author": "Brian Gershon <briangershon@users.noreply.github.com>",
+  "keywords": [
+    "bluesky",
+    "bsky",
+    "atproto",
+    "summary",
+    "summarize"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "private": false,
+  "type": "module",
+  "engines": {
+    "node": ">=20.x"
+  },
+  "scripts": {
+    "watch": "tsc --watch",
+    "build": "tsc",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "ts-node-dev": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@vitest/coverage-v8": "3.0.4",
+    "typescript": "^5.3.3",
+    "vitest": "^3.0.4"
+  }
+}
