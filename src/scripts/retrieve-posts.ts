@@ -2,7 +2,13 @@ import { AtpAgent } from '@atproto/api';
 import 'dotenv/config';
 import { BskyTldr } from '../lib/bsky-tldr';
 
-async function main() {
+async function main({
+  feedToFollow,
+  targetDate,
+}: {
+  feedToFollow: string;
+  targetDate: string;
+}) {
   const bluesky = new AtpAgent({
     service: 'https://bsky.social',
   });
@@ -14,12 +20,7 @@ async function main() {
 
   const service = new BskyTldr(bluesky);
 
-  const authorDid = 'brianfive.xyz';
-  const targetDate = '20250201';
-  // const authorDid = 'nodejs.org';
-  // const targetDate = '20250121';
-
-  const follows = service.retrieveFollowsGenerator({ actor: authorDid });
+  const follows = service.retrieveFollowsGenerator({ actor: feedToFollow });
 
   let followIndex = 0;
   for await (const follow of follows) {
@@ -52,4 +53,4 @@ async function main() {
   }
 }
 
-main();
+await main({ feedToFollow: 'brianfive.xyz', targetDate: '20250201' });
