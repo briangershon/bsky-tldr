@@ -1,4 +1,6 @@
 import { AtpAgent } from '@atproto/api';
+import { isReasonRepost } from '@atproto/api/dist/client/types/app/bsky/feed/defs';
+import { isRecord } from '@atproto/api/dist/client/types/app/bsky/feed/post';
 
 export interface Follow {
   did: string;
@@ -9,6 +11,7 @@ export interface Post {
   uri: string;
   content: string;
   createdAt: string;
+  isRepost: boolean;
 }
 
 export class BlueskyService {
@@ -84,10 +87,18 @@ export class BlueskyService {
         });
 
         for (const post of data.feed) {
+          const record = isRecord(post.post.record)
+            ? post.post.record
+            : {
+                text: '',
+                createdAt: '',
+              };
+
           yield {
             uri: post.post.uri,
-            content: post.post.record.text,
-            createdAt: post.post.record.createdAt,
+            content: record.text,
+            createdAt: record.createdAt,
+            isRepost: isReasonRepost(post.reason),
           };
           count++;
         }
