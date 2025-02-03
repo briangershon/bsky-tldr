@@ -1,6 +1,6 @@
 import { AtpAgent } from '@atproto/api';
 import 'dotenv/config';
-import { BskyTldr } from '../lib/bluesky-generators';
+import { BskyTldr } from '../lib/bsky-tldr';
 
 async function main() {
   const bluesky = new AtpAgent({
