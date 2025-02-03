@@ -36,7 +36,15 @@ async function main() {
         break;
       }
 
-      console.log('post', postIndex, post.createdAt, post.content.slice(0, 25));
+      if (createAt == targetDate) {
+        console.log(
+          'post',
+          postIndex,
+          post.createdAt,
+          post.content.slice(0, 25)
+        );
+      }
+
       postIndex++;
     }
 
