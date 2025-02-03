@@ -8,12 +8,8 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "skipLibCheck": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["src/tests/**/*", "node_modules", "dist"]
+  "include": ["src/**/*", "scripts/**/*"],
+  "exclude": ["src/tests/**/*", "node_modules", "dist", "coverage"]
 }

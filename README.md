@@ -8,7 +8,23 @@ Features:
 - prettier for code formatting
 - vitest for testing and code coverage (and GitHub Action)
 
-## Run locally
+## Run example script that uses this package
+
+Create an `.env` file in the root directory with the following content:
+
+```bash
+BLUESKY_USERNAME=
+BLUESKY_PASSWORD=
+```
+
+Then run the following commands:
+
+```bash
+npm install
+npm run retrievePosts
+```
+
+## Developing locally
 
 ```bash
 npm install
