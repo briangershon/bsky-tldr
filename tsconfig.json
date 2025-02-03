@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2017",
     "module": "esnext",
-    "moduleResolution": "node", // Add this to help resolve node_modules imports
+    "moduleResolution": "node",
     "declaration": false,
     "rootDir": "src",
     "outDir": "dist",
@@ -10,20 +10,15 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "allowJs": true, // Add this to allow JavaScript files
-    "resolveJsonModule": true, // Add this if you need to import JSON files
-    "isolatedModules": true, // Add this for better compatibility with bundlers
-    "types": ["node"], // Add this to include node types
-    "baseUrl": ".", // Add this for path resolution
+    "allowJs": true,
+    "isolatedModules": true,
+    "types": ["node"],
+    "baseUrl": ".",
     "paths": {
-      // Optional: Add if you want path aliases
       "@/*": ["src/*"]
     }
   },
-  "include": [
-    "src/**/*",
-    "src/**/*.json" // Add this if you have JSON files to include
-  ],
+  "include": ["src/**/*"],
   "exclude": [
     "src/tests/**/*",
     "src/scripts/**/*",
