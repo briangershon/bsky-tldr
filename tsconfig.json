@@ -1,15 +1,35 @@
 {
   "compilerOptions": {
     "target": "es2017",
-    "module": "CommonJS",
-    "declaration": true,
+    "module": "esnext",
+    "moduleResolution": "node", // Add this to help resolve node_modules imports
+    "declaration": false,
     "rootDir": "src",
     "outDir": "dist",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "allowJs": true, // Add this to allow JavaScript files
+    "resolveJsonModule": true, // Add this if you need to import JSON files
+    "isolatedModules": true, // Add this for better compatibility with bundlers
+    "types": ["node"], // Add this to include node types
+    "baseUrl": ".", // Add this for path resolution
+    "paths": {
+      // Optional: Add if you want path aliases
+      "@/*": ["src/*"]
+    }
   },
-  "include": ["src/**/*", "scripts/**/*"],
-  "exclude": ["src/tests/**/*", "node_modules", "dist", "coverage"]
+  "include": [
+    "src/**/*",
+    "src/**/*.json" // Add this if you have JSON files to include
+  ],
+  "exclude": [
+    "src/tests/**/*",
+    "src/scripts/**/*",
+    "src/lib/**/*",
+    "node_modules",
+    "dist",
+    "coverage"
+  ]
 }
