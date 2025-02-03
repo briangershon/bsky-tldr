@@ -37,6 +37,10 @@ export default [
       '@atproto/common',
       '@atproto/uri',
     ],
+    watch: {
+      include: 'src/**',
+      clearScreen: false,
+    },
   },
   {
     input: 'src/index.ts',
