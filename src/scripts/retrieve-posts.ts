@@ -1,6 +1,6 @@
 import { AtpAgent } from '@atproto/api';
 import 'dotenv/config';
-import { BlueskyService } from '../lib/bluesky-generators';
+import { BskyTldr } from '../lib/bluesky-generators';
 
 async function main() {
   const bluesky = new AtpAgent({
@@ -12,7 +12,7 @@ async function main() {
     password: process.env.BLUESKY_PASSWORD!,
   });
 
-  const service = new BlueskyService(bluesky);
+  const service = new BskyTldr(bluesky);
 
   const authorDid = 'brianfive.xyz';
 

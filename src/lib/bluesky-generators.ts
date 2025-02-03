@@ -14,7 +14,7 @@ export interface Post {
   isRepost: boolean;
 }
 
-export class BlueskyService {
+export class BskyTldr {
   private bluesky: AtpAgent;
 
   constructor(agent: AtpAgent) {

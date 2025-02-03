@@ -1,1 +1,1 @@
-export { BlueskyService } from './lib/bluesky-generators';
+export { BskyTldr } from './lib/bluesky-generators';
