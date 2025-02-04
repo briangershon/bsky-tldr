@@ -1,46 +1,86 @@
 # bsky-tldr
 
-A JavaScript package for creating daily summaries of Bluesky posts for those you follow.
+Bluesky feed overload? Too long, didn't read?
 
-Features:
+Skim a daily list of posts from people you follow, or use AI/LLMs to summarize them into text you can scan or feed to an agent.
 
-- TypeScript definitions
-- prettier for code formatting
-- vitest for testing and code coverage (and GitHub Action)
+## Installation
 
-## Example usage
+```bash
+npm install bsky-tldr
+```
 
-Create an `.env` file in the root directory with the following content:
+## Example
+
+Here's an example of a data structure you could build for viewing posts from your followers. If you're only following 1 user, and they had two posts on January 31, 2025:
+
+```json
+{
+  "follows": {
+    "did:plc:oeio7zuhrsvmlyhia7e44nk6": {
+      "handle": "mattpocock.com",
+      "posts": [
+        {
+          "uri": "at://did:plc:oeio7zuhrsvmlyhia7e44nk6/app.bsky.feed.post/3lgzvm46vhu2c",
+          "content": "TIL about process.exitCode = 1;\n\nUseful if you want to mark a process as failed without immediately exiting it",
+          "createdAt": "2025-01-31T11:32:00.769Z",
+          "isRepost": false
+        },
+        {
+          "uri": "at://did:plc:oeio7zuhrsvmlyhia7e44nk6/app.bsky.feed.post/3lh2c4nddwr2s",
+          "content": "Is there a decent chunking algorithm library on NPM?\n\nI know Langchain and LlamaIndex have some, but figured there were probably some unbundled from frameworks.\n\nChunking: chunking text documents to be fed into a RAG system.",
+          "createdAt": "2025-01-31T15:16:00.525Z",
+          "isRepost": false
+        }
+      ]
+    }
+  }
+}
+```
+
+The author's `did` and `handle` are provided, along with posts that include `uri`, `content`, `createdAt`, and `isRepost`.
+
+If you need more information in your app, use `@atproto/api` library directly to retrieve the author's profile using their `did`, or the full post and replies via its `uri`.
+
+## Run example
+
+1. Create a new App password in Bluesky, and provide your `BLUESKY_USERNAME` and `BLUESKY_PASSWORD` in an `.env` file in your root directory. You can create these via `Bluesky account settings > Privacy & Security > App passwords`.
 
 ```bash
 BLUESKY_USERNAME=
 BLUESKY_PASSWORD=
 ```
 
-Run the example with following commands:
+2. Update script:
+
+First change `feedToFollow` and `targetDate` in `./src/scripts/retrieve-posts.ts` to your Bluesky handle and a date in `yyyymmdd` format.
+
+3. Run the script:
 
 ```bash
 npm install
 npm run retrievePosts
 ```
 
-See `./src/scripts/retrieve-posts.ts` for the code that runs.
+## Help for Contributors
 
-## Developing locally
+### Local Development with watch mode
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Run tests or coverage reports
+### Run tests or coverage reports
 
 ```bash
 npm test
 npm run coverage
 ```
 
-## How to use this package locally with another project
+### Testing package in another project
+
+If you want to make changes to this package while testing it with another project:
 
 ```bash
 # In your package directory
@@ -50,7 +90,7 @@ npm link
 npm link your-package-name
 ```
 
-## Publishing to NPM
+### Steps for publishing package to NPM
 
 After merging latest code to `main` branch, run the following commands:
 
