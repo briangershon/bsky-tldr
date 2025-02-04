@@ -49,3 +49,14 @@ npm link
 # In your test project directory
 npm link your-package-name
 ```
+
+## Publishing to NPM
+
+After merging latest code to `main` branch, run the following commands:
+
+```bash
+npm version patch  # or minor/major
+git push --follow-tags
+```
+
+Create a GitHub release.
