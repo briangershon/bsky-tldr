@@ -1,6 +1,6 @@
 # bsky-tldr
 
-A JavaScript package for creating daily summary of Bluesky posts for those you follow.
+A JavaScript package for creating daily summaries of Bluesky posts for those you follow.
 
 Features:
 
