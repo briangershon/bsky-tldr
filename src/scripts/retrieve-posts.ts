@@ -1,8 +1,28 @@
 import { AtpAgent } from '@atproto/api';
 import 'dotenv/config';
-import { BskyTldr } from '../lib/bsky-tldr';
+import { BskyTldr, Post } from '../lib/bsky-tldr';
 
-async function main({
+const postsPerAuthor = await buildPostsPerAuthor({
+  feedToFollow: 'brianfive.xyz',
+  targetDate: '20250201',
+});
+
+console.debug(postsPerAuthor);
+
+// Helper types and logic below
+
+interface PostsPerAuthor {
+  [author: string]: {
+    handle: string;
+    posts: Post[];
+  };
+}
+
+/*
+ * This function retrieves all posts for a given author's feed on a given date
+ *   using `bsky-tldr` and `atproto` libraries.
+ */
+async function buildPostsPerAuthor({
   feedToFollow,
   targetDate,
 }: {
@@ -20,37 +40,47 @@ async function main({
 
   const service = new BskyTldr(bluesky);
 
+  const postsPerAuthor: PostsPerAuthor = {};
+
   const follows = service.retrieveFollowsGenerator({ actor: feedToFollow });
 
   let followIndex = 0;
   for await (const follow of follows) {
     const posts = service.retrieveAuthorFeedGenerator({ actor: follow.did });
 
-    console.log(`Retrieving posts for follow ${follow.handle}`);
+    console.log(
+      `Retrieving posts for follow ${follow.handle} on ${targetDate}`
+    );
 
     let postIndex = 0;
+    let authorsDailyPosts: Post[] = [];
 
     for await (const post of posts) {
       const createAt = post.createdAt.slice(0, 10).replace(/-/g, '');
       if (createAt < targetDate) {
-        console.log('\n---\n');
         break;
       }
 
       if (createAt == targetDate) {
-        console.log(
-          'post',
-          postIndex,
-          post.createdAt,
-          post.content.slice(0, 25)
-        );
+        authorsDailyPosts.push(post);
       }
 
       postIndex++;
     }
 
+    if (authorsDailyPosts.length > 0) {
+      console.log(
+        `Found ${authorsDailyPosts.length} posts for ${follow.handle}`
+      );
+
+      postsPerAuthor[follow.did] = {
+        handle: follow.handle,
+        posts: authorsDailyPosts,
+      };
+    }
+
     followIndex++;
   }
-}
 
-await main({ feedToFollow: 'brianfive.xyz', targetDate: '20250201' });
+  return { follows: postsPerAuthor };
+}
