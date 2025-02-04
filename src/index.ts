@@ -1,1 +1,1 @@
-export { BskyTldr } from './lib/bsky-tldr';
+export { BskyTldr, type Follow, type Post } from './lib/bsky-tldr';

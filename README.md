@@ -8,7 +8,7 @@ Features:
 - prettier for code formatting
 - vitest for testing and code coverage (and GitHub Action)
 
-## Run example script that uses this package
+## Example usage
 
 Create an `.env` file in the root directory with the following content:
 
@@ -17,12 +17,14 @@ BLUESKY_USERNAME=
 BLUESKY_PASSWORD=
 ```
 
-Then run the following commands:
+Run the example with following commands:
 
 ```bash
 npm install
 npm run retrievePosts
 ```
+
+See `./src/scripts/retrieve-posts.ts` for the code that runs.
 
 ## Developing locally
 
