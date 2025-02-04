@@ -1,6 +1,6 @@
 # bsky-tldr
 
-A JavaScript package for creating daily summary of Bluesky posts for those you follow.
+A JavaScript package for creating daily summaries of Bluesky posts for those you follow.
 
 Features:
 
@@ -8,11 +8,29 @@ Features:
 - prettier for code formatting
 - vitest for testing and code coverage (and GitHub Action)
 
-## Run locally
+## Example usage
+
+Create an `.env` file in the root directory with the following content:
+
+```bash
+BLUESKY_USERNAME=
+BLUESKY_PASSWORD=
+```
+
+Run the example with following commands:
 
 ```bash
 npm install
-npm run watch
+npm run retrievePosts
+```
+
+See `./src/scripts/retrieve-posts.ts` for the code that runs.
+
+## Developing locally
+
+```bash
+npm install
+npm run dev
 ```
 
 ## Run tests or coverage reports
@@ -31,3 +49,14 @@ npm link
 # In your test project directory
 npm link your-package-name
 ```
+
+## Publishing to NPM
+
+After merging latest code to `main` branch, run the following commands:
+
+```bash
+npm version patch  # or minor/major
+git push --follow-tags
+```
+
+Create a GitHub release.
