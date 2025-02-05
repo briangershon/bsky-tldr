@@ -2,21 +2,21 @@ import { AtpAgent } from '@atproto/api';
 import 'dotenv/config';
 import {
   BskyTldr,
-  dailyPostsPerAuthor,
-  DailyPostsPerAuthorResponse,
+  getDailyPostsFromFollows,
+  DailyPostsFromFollowsResponse,
 } from '../index';
 
 /*
  * This function retrieves all posts for a given author's feed on a given date
  *   using `bsky-tldr` and `atproto` libraries.
  */
-async function buildDailyPostsPerAuthor({
-  feedToFollow,
+async function buildDailyPostsFromFollows({
+  sourceActor,
   targetDate,
 }: {
-  feedToFollow: string;
+  sourceActor: string;
   targetDate: string;
-}): Promise<DailyPostsPerAuthorResponse> {
+}): Promise<DailyPostsFromFollowsResponse> {
   const bluesky = new AtpAgent({
     service: 'https://bsky.social',
   });
@@ -26,18 +26,18 @@ async function buildDailyPostsPerAuthor({
     password: process.env.BLUESKY_PASSWORD!,
   });
 
-  const service = new BskyTldr(bluesky);
+  const tldr = new BskyTldr(bluesky);
 
-  return dailyPostsPerAuthor({
-    feedToFollow,
+  return getDailyPostsFromFollows({
+    sourceActor,
     targetDate,
-    retrieveFollows: service.retrieveFollowsGenerator.bind(service),
-    retrieveAuthorFeed: service.retrieveAuthorFeedGenerator.bind(service),
+    retrieveFollows: tldr.retrieveFollowsGenerator.bind(tldr),
+    retrieveAuthorFeed: tldr.retrieveAuthorFeedGenerator.bind(tldr),
   });
 }
 
-const postsPerAuthorResponse = await buildDailyPostsPerAuthor({
-  feedToFollow: 'brianfive.xyz',
+const postsPerAuthorResponse = await buildDailyPostsFromFollows({
+  sourceActor: 'brianfive.xyz',
   targetDate: '20250201',
 });
 

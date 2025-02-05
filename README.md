@@ -12,7 +12,7 @@ npm install bsky-tldr
 
 ## Data Structure Example
 
-Here's the data structure built with the `dailyPostsPerAuthor` function for viewing posts from your followers. If you're only following 1 user, and they had two posts on January 31, 2025:
+Here's the data structure built with our `getDailyPostsFromFollows` library function for viewing posts from your follows. If you're only following 1 user, and they had two posts on January 31, 2025:
 
 ```json
 {
@@ -53,11 +53,11 @@ BLUESKY_PASSWORD=
 
 2. Update script:
 
-First change `feedToFollow` and `targetDate` in `./src/scripts/retrieve-posts.ts` to your Bluesky handle and a date in `yyyymmdd` format.
+First change `sourceActor` and `targetDate` in `./src/scripts/retrieve-posts.ts` to your Bluesky handle or `did`, and a date in `yyyymmdd` format.
 
 ```javascript
-const postsPerAuthorResponse = await buildDailyPostsPerAuthor({
-  feedToFollow: 'brianfive.xyz',
+const postsPerAuthorResponse = await buildDailyPostsFromFollows({
+  sourceActor: 'brianfive.xyz', // or 'did:plc:3cgdoyodzdnhugjjrazljkzq'
   targetDate: '20250201',
 });
 ```

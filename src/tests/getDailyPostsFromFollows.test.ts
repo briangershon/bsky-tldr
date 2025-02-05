@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { Follow, Post } from '../lib/bsky-tldr';
-import { dailyPostsPerAuthor } from '../lib/dailyPostsPerAuthor';
+import { getDailyPostsFromFollows } from '../lib/getDailyPostsFromFollows';
 
-describe('dailyPostsPerAuthor', () => {
+describe('getDailyPostsFromFollows', () => {
   const mockFollow: Follow = {
     did: 'did:plc:1234',
     handle: 'test.bsky.app',
@@ -28,8 +28,8 @@ describe('dailyPostsPerAuthor', () => {
     const mockRetrieveFollows = vi.fn(() => createAsyncGenerator<Follow>([]));
     const mockRetrieveAuthorFeed = vi.fn(() => createAsyncGenerator<Post>([]));
 
-    const result = await dailyPostsPerAuthor({
-      feedToFollow: 'did:plc:test',
+    const result = await getDailyPostsFromFollows({
+      sourceActor: 'did:plc:test',
       targetDate: '20240204',
       retrieveFollows: mockRetrieveFollows,
       retrieveAuthorFeed: mockRetrieveAuthorFeed,
@@ -45,8 +45,8 @@ describe('dailyPostsPerAuthor', () => {
     );
     const mockRetrieveAuthorFeed = vi.fn(() => createAsyncGenerator<Post>([]));
 
-    const result = await dailyPostsPerAuthor({
-      feedToFollow: 'did:plc:test',
+    const result = await getDailyPostsFromFollows({
+      sourceActor: 'did:plc:test',
       targetDate: '20240204',
       retrieveFollows: mockRetrieveFollows,
       retrieveAuthorFeed: mockRetrieveAuthorFeed,
@@ -73,8 +73,8 @@ describe('dailyPostsPerAuthor', () => {
       createAsyncGenerator<Post>([mockPost])
     );
 
-    const result = await dailyPostsPerAuthor({
-      feedToFollow: 'did:plc:test',
+    const result = await getDailyPostsFromFollows({
+      sourceActor: 'did:plc:test',
       targetDate: '20240204',
       retrieveFollows: mockRetrieveFollows,
       retrieveAuthorFeed: mockRetrieveAuthorFeed,
@@ -103,8 +103,8 @@ describe('dailyPostsPerAuthor', () => {
       createAsyncGenerator<Post>([mockPost, differentDatePost])
     );
 
-    const result = await dailyPostsPerAuthor({
-      feedToFollow: 'did:plc:test',
+    const result = await getDailyPostsFromFollows({
+      sourceActor: 'did:plc:test',
       targetDate: '20240204',
       retrieveFollows: mockRetrieveFollows,
       retrieveAuthorFeed: mockRetrieveAuthorFeed,
@@ -134,8 +134,8 @@ describe('dailyPostsPerAuthor', () => {
       )
     );
 
-    const result = await dailyPostsPerAuthor({
-      feedToFollow: 'did:plc:test',
+    const result = await getDailyPostsFromFollows({
+      sourceActor: 'did:plc:test',
       targetDate: '20240204',
       retrieveFollows: mockRetrieveFollows,
       retrieveAuthorFeed: mockRetrieveAuthorFeed,
@@ -177,8 +177,8 @@ describe('dailyPostsPerAuthor', () => {
       yield neverReachedPost; // This should never be reached
     });
 
-    const result = await dailyPostsPerAuthor({
-      feedToFollow: 'did:plc:test',
+    const result = await getDailyPostsFromFollows({
+      sourceActor: 'did:plc:test',
       targetDate: '20240204',
       retrieveFollows: mockRetrieveFollows,
       retrieveAuthorFeed: mockRetrieveAuthorFeed,
@@ -215,8 +215,8 @@ describe('dailyPostsPerAuthor', () => {
       createAsyncGenerator<Post>([laterPost, mockPost, earlierPost])
     );
 
-    const result = await dailyPostsPerAuthor({
-      feedToFollow: 'did:plc:test',
+    const result = await getDailyPostsFromFollows({
+      sourceActor: 'did:plc:test',
       targetDate: '20240204',
       retrieveFollows: mockRetrieveFollows,
       retrieveAuthorFeed: mockRetrieveAuthorFeed,
@@ -240,8 +240,8 @@ describe('dailyPostsPerAuthor', () => {
     const mockRetrieveAuthorFeed = vi.fn(() => createAsyncGenerator<Post>([]));
 
     await expect(
-      dailyPostsPerAuthor({
-        feedToFollow: 'did:plc:test',
+      getDailyPostsFromFollows({
+        sourceActor: 'did:plc:test',
         targetDate: '20240204',
         retrieveFollows: mockRetrieveFollows,
         retrieveAuthorFeed: mockRetrieveAuthorFeed,
@@ -258,8 +258,8 @@ describe('dailyPostsPerAuthor', () => {
     });
 
     await expect(
-      dailyPostsPerAuthor({
-        feedToFollow: 'did:plc:test',
+      getDailyPostsFromFollows({
+        sourceActor: 'did:plc:test',
         targetDate: '20240204',
         retrieveFollows: mockRetrieveFollows,
         retrieveAuthorFeed: mockRetrieveAuthorFeed,

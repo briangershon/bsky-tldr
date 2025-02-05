@@ -1,31 +1,32 @@
 import { Follow, Post } from './bsky-tldr';
 
-export interface DailyPostsPerAuthor {
+export interface DailyPostsFromFollows {
   [author: string]: {
     handle: string;
     posts: Post[];
   };
 }
 
-export interface DailyPostsPerAuthorResponse {
-  follows: DailyPostsPerAuthor;
+export interface DailyPostsFromFollowsResponse {
+  follows: DailyPostsFromFollows;
 }
 
 /**
- * Daily posts per author.
- * @param feedToFollow is a Bluesky DID
+ * Return the daily posts for each of your follows.
+ * For example, if you follow 3 people, this will return all posts from those 3 people on a given date.
+ * @param sourceActor this is the starting point for finding follows, a Bluesky actor name or DID.
  * @param targetDate is a date in the format 'YYYYMMDD'
- * @param retrieveFollows is a function that retrieves all follows for a given author
- * @param retrieveAuthorFeed is a function that retrieves all posts for a given author's feed on a given date
- * @returns DailyPostsPerAuthorResponse
+ * @param retrieveFollows is an async generator function that retrieves all follows for a given author
+ * @param retrieveAuthorFeed is an async generator function that retrieves all posts for a given author's feed on a given date
+ * @returns DailyPostsFromFollowsResponse
  */
-export async function dailyPostsPerAuthor({
-  feedToFollow,
+export async function getDailyPostsFromFollows({
+  sourceActor,
   targetDate,
   retrieveFollows,
   retrieveAuthorFeed,
 }: {
-  feedToFollow: string;
+  sourceActor: string;
   targetDate: string;
   retrieveFollows: ({
     actor,
@@ -41,8 +42,8 @@ export async function dailyPostsPerAuthor({
     actor: string;
     batchSize?: number;
   }) => AsyncGenerator<Post, void, undefined>;
-}): Promise<DailyPostsPerAuthorResponse> {
-  const follows: DailyPostsPerAuthor = {};
+}): Promise<DailyPostsFromFollowsResponse> {
+  const follows: DailyPostsFromFollows = {};
 
   // Convert targetDate to start and end of day in ISO format
   const year = targetDate.slice(0, 4);
@@ -52,7 +53,7 @@ export async function dailyPostsPerAuthor({
   const endOfDay = new Date(`${year}-${month}-${day}T23:59:59.999Z`).getTime();
 
   // Retrieve all follows
-  for await (const follow of retrieveFollows({ actor: feedToFollow })) {
+  for await (const follow of retrieveFollows({ actor: sourceActor })) {
     follows[follow.did] = {
       handle: follow.handle,
       posts: [],
