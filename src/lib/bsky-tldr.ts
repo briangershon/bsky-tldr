@@ -36,7 +36,7 @@ export class BskyTldr {
 
     try {
       do {
-        const response = await this.bluesky.api.app.bsky.graph.getFollows({
+        const response = await this.bluesky.getFollows({
           actor,
           limit: batchSize,
           cursor,
