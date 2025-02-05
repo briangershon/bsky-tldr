@@ -10,9 +10,9 @@ Skim a daily list of posts from people you follow, or use AI/LLMs to summarize t
 npm install bsky-tldr
 ```
 
-## Example
+## Data Structure Example
 
-Here's an example of a data structure you could build for viewing posts from your followers. If you're only following 1 user, and they had two posts on January 31, 2025:
+Here's the data structure built with the `dailyPostsPerAuthor` function for viewing posts from your followers. If you're only following 1 user, and they had two posts on January 31, 2025:
 
 ```json
 {
@@ -54,6 +54,13 @@ BLUESKY_PASSWORD=
 2. Update script:
 
 First change `feedToFollow` and `targetDate` in `./src/scripts/retrieve-posts.ts` to your Bluesky handle and a date in `yyyymmdd` format.
+
+```javascript
+const postsPerAuthorResponse = await buildDailyPostsPerAuthor({
+  feedToFollow: 'brianfive.xyz',
+  targetDate: '20250201',
+});
+```
 
 3. Run the script:
 
