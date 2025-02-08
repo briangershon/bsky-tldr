@@ -1,10 +1,12 @@
 import { Follow, Post } from './bsky-tldr';
 
+export interface AuthorFeed {
+  handle: string;
+  posts: Post[];
+}
+
 export interface DailyPostsFromFollows {
-  [author: string]: {
-    handle: string;
-    posts: Post[];
-  };
+  [author: string]: AuthorFeed;
 }
 
 export interface DailyPostsFromFollowsResponse {
