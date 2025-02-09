@@ -5,10 +5,12 @@ import {
   type DailyPostsFromFollows,
   type DailyPostsFromFollowsResponse,
 } from './lib/getDailyPostsFromFollows';
+import { uriToUrl } from './lib/uiToUrl';
 
 export {
   BskyTldr,
   getDailyPostsFromFollows,
+  uriToUrl,
   type AuthorFeed,
   type DailyPostsFromFollows,
   type DailyPostsFromFollowsResponse,
@@ -19,4 +21,5 @@ export {
 export default {
   BskyTldr,
   getDailyPostsFromFollows,
+  uriToUrl,
 };

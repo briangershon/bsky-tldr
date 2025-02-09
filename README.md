@@ -10,6 +10,14 @@ Skim a daily list of posts from people you follow, or use AI/LLMs to summarize t
 npm install bsky-tldr
 ```
 
+## API
+
+Exports from the library:
+
+`BskyTldr` is a class that contains lower level functions to retrieve Posts and Follows.
+`getDailyPostsFromFollows` is a higher level function to retrieve daily posts from follows. See Data Structure Example below.
+`uriToUrl` is a utility function to convert a post uri to a public url to view post on the web.
+
 ## Data Structure Example
 
 Here's the data structure built with our `getDailyPostsFromFollows` library function for viewing posts from your follows. If you're only following 1 user, and they had two posts on January 31, 2025:
