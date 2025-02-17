@@ -2,8 +2,10 @@ import { AtpAgent } from '@atproto/api';
 import 'dotenv/config';
 import {
   BskyTldr,
-  getDailyPostsFromFollows,
   DailyPostsFromFollowsResponse,
+  getDailyPostsFromFollows,
+  Post,
+  uriToUrl,
 } from '../index';
 
 /*
@@ -42,3 +44,14 @@ const postsPerAuthorResponse = await buildDailyPostsFromFollows({
 });
 
 console.debug(postsPerAuthorResponse);
+
+const allPosts: Post[] = [];
+
+// Loop through each user in the follows object
+Object.values(postsPerAuthorResponse.follows).forEach((user) => {
+  allPosts.push(...user.posts);
+});
+
+// demonstrate the uriToUrl function
+console.log(`All ${allPosts.length} post URLs:`);
+console.log(allPosts.map((post) => post.uri).map(uriToUrl));
