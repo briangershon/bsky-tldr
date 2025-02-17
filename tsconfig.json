@@ -1,30 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es2017",
+    "target": "es2020",
     "module": "esnext",
     "moduleResolution": "node",
-    "declaration": false,
-    "rootDir": "src",
-    "outDir": "dist",
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": true,
+    "outDir": "dist",
     "skipLibCheck": true,
-    "allowJs": true,
-    "isolatedModules": true,
-    "types": ["node"],
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*"],
-  "exclude": [
-    "src/tests/**/*",
-    "src/scripts/**/*",
-    "src/lib/**/*",
-    "node_modules",
-    "dist",
-    "coverage"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "coverage", "src/scripts"]
 }

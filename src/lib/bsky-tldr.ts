@@ -1,6 +1,8 @@
 import { AtpAgent } from '@atproto/api';
-import { isReasonRepost } from '@atproto/api/dist/client/types/app/bsky/feed/defs';
-import { isRecord } from '@atproto/api/dist/client/types/app/bsky/feed/post';
+import {
+  isReasonRepost,
+  validateFeedViewPost,
+} from '@atproto/api/dist/client/types/app/bsky/feed/defs';
 
 export interface Follow {
   did: string;
@@ -86,19 +88,18 @@ export class BskyTldr {
           cursor,
         });
 
-        for (const post of data.feed) {
-          const record = isRecord(post.post.record)
-            ? post.post.record
-            : {
-                text: '',
-                createdAt: '',
-              };
+        for (const feedViewPost of data.feed) {
+          if (!validateFeedViewPost(feedViewPost)) {
+            console.info('Invalid feed view post:', feedViewPost);
+            continue;
+          }
 
+          const postView = feedViewPost.post;
           yield {
-            uri: post.post.uri,
-            content: record.text,
-            createdAt: record.createdAt,
-            isRepost: isReasonRepost(post.reason),
+            uri: postView.uri,
+            content: (postView.record.text as string) || '',
+            createdAt: (postView.record.createdAt as string) || '',
+            isRepost: isReasonRepost(feedViewPost.reason),
           };
           count++;
         }

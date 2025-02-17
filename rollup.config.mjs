@@ -18,12 +18,15 @@ const plugins = [
     preferBuiltins: true,
     extensions: ['.ts', '.js', '.json'],
   }),
-  commonjs(),
+  commonjs({
+    requireReturnsDefault: 'auto',
+  }),
   json(),
   typescript({
     tsconfig: './tsconfig.json',
     sourceMap: true,
     declaration: false,
+    moduleResolution: 'node',
   }),
   terser(),
 ];
@@ -32,45 +35,35 @@ export default [
   // ESM build
   {
     input: 'src/index.ts',
-    output: [
-      {
-        file: 'dist/index.js',
-        format: 'esm',
-        sourcemap: true,
-        exports: 'named',
-      },
-    ],
+    output: {
+      file: 'dist/index.js',
+      format: 'esm',
+      sourcemap: true,
+      exports: 'named',
+    },
     plugins,
     external,
-    watch: {
-      include: 'src/**',
-      clearScreen: false,
-    },
   },
   // CJS build
   {
     input: 'src/index.ts',
-    output: [
-      {
-        file: 'dist/index.cjs',
-        format: 'cjs',
-        sourcemap: true,
-        exports: 'named',
-      },
-    ],
+    output: {
+      file: 'dist/index.cjs',
+      format: 'cjs',
+      sourcemap: true,
+      exports: 'named',
+    },
     plugins,
     external,
   },
-  // Type definitions
+  // Single d.ts file
   {
     input: 'src/index.ts',
-    output: [
-      {
-        file: 'dist/index.d.ts',
-        format: 'es',
-      },
-    ],
+    output: {
+      file: 'dist/index.d.ts',
+      format: 'es',
+    },
     plugins: [dts()],
-    external: [/\.json$/],
+    external,
   },
 ];
