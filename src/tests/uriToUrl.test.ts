@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { uriToUrl } from '../lib/uiToUrl';
+import { uriToUrl } from '../lib/uriToUrl';
 
 describe('uriToUrl utility function', () => {
   it('should calculate correct url from uri', async () => {
