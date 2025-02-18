@@ -4,9 +4,10 @@ Bluesky feed overload? Too long, didn't read?
 
 Skim a daily list of posts from people you follow, or use AI/LLMs to summarize them into text you can scan or feed to an agent.
 
-## Installation
+## Installation in your application
 
 ```bash
+npm install @atproto/api
 npm install bsky-tldr
 ```
 
@@ -45,6 +46,8 @@ Here's the data structure built with our `getDailyPostsFromFollows` library func
   }
 }
 ```
+
+You can use `uriToUrl()` function to convert the `uri` to a public URL to view the post on the web.
 
 The author's `did` and `handle` are provided, along with posts that include `uri`, `content`, `createdAt`, and `isRepost`.
 
@@ -107,11 +110,9 @@ npm link your-package-name
 
 ### Steps for publishing package to NPM
 
-After merging latest code to `main` branch, run the following commands:
+After merging latest code to `main` branch:
 
-```bash
-npm version patch  # or minor/major
-git push --follow-tags
-```
-
-Create a GitHub release.
+1. Locally, `git checkout main && git pull`
+2. `npm version patch` # or minor, or major
+3. `git push --follow-tags`
+4. Create a GitHub release
