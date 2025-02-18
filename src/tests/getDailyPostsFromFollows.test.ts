@@ -1,6 +1,12 @@
+import AtpAgent from '@atproto/api';
 import { describe, expect, it, vi } from 'vitest';
 import type { Follow, Post } from '../lib/bsky-tldr';
 import { getDailyPostsFromFollows } from '../lib/getDailyPostsFromFollows';
+
+// create a vitest mock for the bluesky object
+const bluesky = new AtpAgent({
+  service: 'https://bsky.social',
+});
 
 describe('getDailyPostsFromFollows', () => {
   const mockFollow: Follow = {
@@ -29,6 +35,7 @@ describe('getDailyPostsFromFollows', () => {
     const mockRetrieveAuthorFeed = vi.fn(() => createAsyncGenerator<Post>([]));
 
     const result = await getDailyPostsFromFollows({
+      bluesky,
       sourceActor: 'did:plc:test',
       targetDate: '20240204',
       retrieveFollows: mockRetrieveFollows,
@@ -36,7 +43,10 @@ describe('getDailyPostsFromFollows', () => {
     });
 
     expect(result).toEqual({ follows: {} });
-    expect(mockRetrieveFollows).toHaveBeenCalledWith({ actor: 'did:plc:test' });
+    expect(mockRetrieveFollows).toHaveBeenCalledWith({
+      bluesky,
+      actor: 'did:plc:test',
+    });
   });
 
   it('should return follows with empty posts when no posts exist', async () => {
@@ -46,6 +56,7 @@ describe('getDailyPostsFromFollows', () => {
     const mockRetrieveAuthorFeed = vi.fn(() => createAsyncGenerator<Post>([]));
 
     const result = await getDailyPostsFromFollows({
+      bluesky,
       sourceActor: 'did:plc:test',
       targetDate: '20240204',
       retrieveFollows: mockRetrieveFollows,
@@ -61,6 +72,7 @@ describe('getDailyPostsFromFollows', () => {
       },
     });
     expect(mockRetrieveAuthorFeed).toHaveBeenCalledWith({
+      bluesky,
       actor: mockFollow.did,
     });
   });
@@ -74,6 +86,7 @@ describe('getDailyPostsFromFollows', () => {
     );
 
     const result = await getDailyPostsFromFollows({
+      bluesky,
       sourceActor: 'did:plc:test',
       targetDate: '20240204',
       retrieveFollows: mockRetrieveFollows,
@@ -104,6 +117,7 @@ describe('getDailyPostsFromFollows', () => {
     );
 
     const result = await getDailyPostsFromFollows({
+      bluesky,
       sourceActor: 'did:plc:test',
       targetDate: '20240204',
       retrieveFollows: mockRetrieveFollows,
@@ -135,6 +149,7 @@ describe('getDailyPostsFromFollows', () => {
     );
 
     const result = await getDailyPostsFromFollows({
+      bluesky,
       sourceActor: 'did:plc:test',
       targetDate: '20240204',
       retrieveFollows: mockRetrieveFollows,
@@ -178,6 +193,7 @@ describe('getDailyPostsFromFollows', () => {
     });
 
     const result = await getDailyPostsFromFollows({
+      bluesky,
       sourceActor: 'did:plc:test',
       targetDate: '20240204',
       retrieveFollows: mockRetrieveFollows,
@@ -216,6 +232,7 @@ describe('getDailyPostsFromFollows', () => {
     );
 
     const result = await getDailyPostsFromFollows({
+      bluesky,
       sourceActor: 'did:plc:test',
       targetDate: '20240204',
       retrieveFollows: mockRetrieveFollows,
@@ -241,6 +258,7 @@ describe('getDailyPostsFromFollows', () => {
 
     await expect(
       getDailyPostsFromFollows({
+        bluesky,
         sourceActor: 'did:plc:test',
         targetDate: '20240204',
         retrieveFollows: mockRetrieveFollows,
@@ -259,6 +277,7 @@ describe('getDailyPostsFromFollows', () => {
 
     await expect(
       getDailyPostsFromFollows({
+        bluesky,
         sourceActor: 'did:plc:test',
         targetDate: '20240204',
         retrieveFollows: mockRetrieveFollows,

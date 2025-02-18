@@ -16,102 +16,98 @@ export interface Post {
   isRepost: boolean;
 }
 
-export class BskyTldr {
-  private bluesky: AtpAgent;
-
-  constructor(agent: AtpAgent) {
-    this.bluesky = agent;
+export async function* retrieveFollowsGenerator({
+  bluesky,
+  actor,
+  batchSize = 50,
+}: {
+  bluesky: AtpAgent;
+  actor: string;
+  batchSize?: number;
+}): AsyncGenerator<Follow, void, undefined> {
+  if (!bluesky) {
+    throw new Error('Bluesky client not initialized');
   }
 
-  async *retrieveFollowsGenerator({
-    actor,
-    batchSize = 50,
-  }: {
-    actor: string;
-    batchSize?: number;
-  }): AsyncGenerator<Follow, void, undefined> {
-    if (!this.bluesky) {
-      throw new Error('Bluesky client not initialized');
-    }
+  let cursor: string | undefined = undefined;
 
-    let cursor: string | undefined = undefined;
+  try {
+    do {
+      const response = await bluesky.getFollows({
+        actor,
+        limit: batchSize,
+        cursor,
+      });
 
-    try {
-      do {
-        const response = await this.bluesky.getFollows({
-          actor,
-          limit: batchSize,
-          cursor,
-        });
+      if (!response.success) {
+        throw new Error('Failed to fetch follows');
+      }
 
-        if (!response.success) {
-          throw new Error('Failed to fetch follows');
-        }
+      for (const follow of response.data.follows) {
+        yield {
+          did: follow.did,
+          handle: follow.handle,
+        };
+      }
 
-        for (const follow of response.data.follows) {
-          yield {
-            did: follow.did,
-            handle: follow.handle,
-          };
-        }
+      cursor = response.data.cursor;
+    } while (cursor);
+  } catch (error) {
+    throw new Error(
+      `Failed to retrieve follows: ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
+    );
+  }
+}
 
-        cursor = response.data.cursor;
-      } while (cursor);
-    } catch (error) {
-      throw new Error(
-        `Failed to retrieve follows: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`
-      );
-    }
+export async function* retrieveAuthorFeedGenerator({
+  bluesky,
+  actor,
+  batchSize = 5,
+}: {
+  bluesky: AtpAgent;
+  actor: string;
+  batchSize?: number;
+}): AsyncGenerator<Post, void, undefined> {
+  if (!bluesky) {
+    throw new Error('Bluesky client not initialized');
   }
 
-  async *retrieveAuthorFeedGenerator({
-    actor,
-    batchSize = 5,
-  }: {
-    actor: string;
-    batchSize?: number;
-  }): AsyncGenerator<Post, void, undefined> {
-    if (!this.bluesky) {
-      throw new Error('Bluesky client not initialized');
-    }
+  let cursor: string | undefined = undefined;
+  let count = 0;
 
-    let cursor: string | undefined = undefined;
-    let count = 0;
+  try {
+    do {
+      const { data } = await bluesky.getAuthorFeed({
+        actor,
+        limit: batchSize,
+        cursor,
+      });
 
-    try {
-      do {
-        const { data } = await this.bluesky.getAuthorFeed({
-          actor,
-          limit: batchSize,
-          cursor,
-        });
-
-        for (const feedViewPost of data.feed) {
-          if (!validateFeedViewPost(feedViewPost)) {
-            console.info('Invalid feed view post:', feedViewPost);
-            continue;
-          }
-
-          const postView = feedViewPost.post;
-          yield {
-            uri: postView.uri,
-            content: (postView.record.text as string) || '',
-            createdAt: (postView.record.createdAt as string) || '',
-            isRepost: isReasonRepost(feedViewPost.reason),
-          };
-          count++;
+      for (const feedViewPost of data.feed) {
+        if (!validateFeedViewPost(feedViewPost)) {
+          console.info('Invalid feed view post:', feedViewPost);
+          continue;
         }
 
-        cursor = data.cursor;
-      } while (cursor);
-    } catch (error) {
-      throw new Error(
-        `Failed to retrieve author feed: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`
-      );
-    }
+        const postView = feedViewPost.post;
+        yield {
+          uri: postView.uri,
+          content: (postView.record.text as string) || '',
+          createdAt: (postView.record.createdAt as string) || '',
+          isRepost: isReasonRepost(feedViewPost.reason),
+        };
+        count++;
+      }
+
+      cursor = data.cursor;
+    } while (cursor);
+  } catch (error) {
+    throw new Error(
+      `Failed to retrieve author feed: ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
+    );
   }
 }

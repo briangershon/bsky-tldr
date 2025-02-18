@@ -1,7 +1,8 @@
 import { AtpAgent } from '@atproto/api';
 import 'dotenv/config';
 import {
-  BskyTldr,
+  retrieveAuthorFeedGenerator,
+  retrieveFollowsGenerator,
   DailyPostsFromFollowsResponse,
   getDailyPostsFromFollows,
   Post,
@@ -28,13 +29,12 @@ async function buildDailyPostsFromFollows({
     password: process.env.BLUESKY_PASSWORD!,
   });
 
-  const tldr = new BskyTldr(bluesky);
-
   return getDailyPostsFromFollows({
+    bluesky,
     sourceActor,
     targetDate,
-    retrieveFollows: tldr.retrieveFollowsGenerator.bind(tldr),
-    retrieveAuthorFeed: tldr.retrieveAuthorFeedGenerator.bind(tldr),
+    retrieveFollows: retrieveFollowsGenerator,
+    retrieveAuthorFeed: retrieveAuthorFeedGenerator,
   });
 }
 
