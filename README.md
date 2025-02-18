@@ -4,6 +4,8 @@ Bluesky feed overload? Too long, didn't read?
 
 Skim a daily list of posts from people you follow, or use AI/LLMs to summarize them into text you can scan or feed to an agent.
 
+[Run example](#run-example) section below for a demo of integration with this library.
+
 ## Installation in your application
 
 ```bash
@@ -15,9 +17,16 @@ npm install bsky-tldr
 
 Exports from the library:
 
-`BskyTldr` is a class that contains lower level functions to retrieve Posts and Follows.
-`getDailyPostsFromFollows` is a higher level function to retrieve daily posts from follows. See Data Structure Example below.
-`uriToUrl` is a utility function to convert a post uri to a public url to view post on the web.
+`getDailyPostsFromFollows` is the main function to retrieve daily posts from follows. See Data Structure Example below.
+
+There are also utility functions that wrap the AtProto pagination with JavaScript generators:
+
+- `retrieveAuthorFeedGenerator()` is a generator function to retrieve posts from an author and
+- `retrieveFollowsGenerator` is a generator function to retrieve follows from an author.
+
+And if you want to convert post `uri` to a public URL:
+
+- `uriToUrl` is a utility function to convert a post uri to a public url to view post on the web.
 
 ## Data Structure Example
 
@@ -46,8 +55,6 @@ Here's the data structure built with our `getDailyPostsFromFollows` library func
   }
 }
 ```
-
-You can use `uriToUrl()` function to convert the `uri` to a public URL to view the post on the web.
 
 The author's `did` and `handle` are provided, along with posts that include `uri`, `content`, `createdAt`, and `isRepost`.
 

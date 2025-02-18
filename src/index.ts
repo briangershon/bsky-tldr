@@ -7,18 +7,26 @@ import type {
 } from './lib/getDailyPostsFromFollows';
 
 // Import functions and classes
-import { BskyTldr } from './lib/bsky-tldr';
+import {
+  retrieveAuthorFeedGenerator,
+  retrieveFollowsGenerator,
+} from './lib/bsky-tldr';
 import { getDailyPostsFromFollows } from './lib/getDailyPostsFromFollows';
 import { uriToUrl } from './lib/uriToUrl';
 
 // Types
 export type {
-  Follow,
-  Post,
   AuthorFeed,
   DailyPostsFromFollows,
   DailyPostsFromFollowsResponse,
+  Follow,
+  Post,
 };
 
 // Core functionality
-export { BskyTldr, getDailyPostsFromFollows, uriToUrl };
+export {
+  getDailyPostsFromFollows,
+  retrieveAuthorFeedGenerator,
+  retrieveFollowsGenerator,
+  uriToUrl,
+};

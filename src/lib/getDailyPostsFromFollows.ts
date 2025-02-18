@@ -1,3 +1,4 @@
+import { Agent } from '@atproto/api';
 import { Follow, Post } from './bsky-tldr';
 
 export interface AuthorFeed {
@@ -23,24 +24,30 @@ export interface DailyPostsFromFollowsResponse {
  * @returns DailyPostsFromFollowsResponse
  */
 export async function getDailyPostsFromFollows({
+  bluesky,
   sourceActor,
   targetDate,
   retrieveFollows,
   retrieveAuthorFeed,
 }: {
+  bluesky: Agent;
   sourceActor: string;
   targetDate: string;
   retrieveFollows: ({
+    bluesky,
     actor,
     batchSize,
   }: {
+    bluesky: Agent;
     actor: string;
     batchSize?: number;
   }) => AsyncGenerator<Follow, void, undefined>;
   retrieveAuthorFeed: ({
+    bluesky,
     actor,
     batchSize,
   }: {
+    bluesky: Agent;
     actor: string;
     batchSize?: number;
   }) => AsyncGenerator<Post, void, undefined>;
@@ -55,7 +62,7 @@ export async function getDailyPostsFromFollows({
   const endOfDay = new Date(`${year}-${month}-${day}T23:59:59.999Z`).getTime();
 
   // Retrieve all follows
-  for await (const follow of retrieveFollows({ actor: sourceActor })) {
+  for await (const follow of retrieveFollows({ bluesky, actor: sourceActor })) {
     follows[follow.did] = {
       handle: follow.handle,
       posts: [],
@@ -67,7 +74,7 @@ export async function getDailyPostsFromFollows({
     const posts: Post[] = [];
 
     // Collect posts for the author
-    for await (const post of retrieveAuthorFeed({ actor: did })) {
+    for await (const post of retrieveAuthorFeed({ bluesky, actor: did })) {
       const postTime = new Date(post.createdAt).getTime();
 
       // If post is from before target date, we can stop processing
