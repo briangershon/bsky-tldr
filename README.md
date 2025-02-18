@@ -4,6 +4,8 @@ Bluesky feed overload? Too long, didn't read?
 
 Skim a daily list of posts from people you follow, or use AI/LLMs to summarize them into text you can scan or feed to an agent.
 
+[Run example](#run-example) section below for a demo of integration with this library.
+
 ## Installation in your application
 
 ```bash

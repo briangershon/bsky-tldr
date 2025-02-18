@@ -1,4 +1,4 @@
-import { AtpAgent } from '@atproto/api';
+import { Agent } from '@atproto/api';
 import {
   isReasonRepost,
   validateFeedViewPost,
@@ -21,7 +21,7 @@ export async function* retrieveFollowsGenerator({
   actor,
   batchSize = 50,
 }: {
-  bluesky: AtpAgent;
+  bluesky: Agent;
   actor: string;
   batchSize?: number;
 }): AsyncGenerator<Follow, void, undefined> {
@@ -66,7 +66,7 @@ export async function* retrieveAuthorFeedGenerator({
   actor,
   batchSize = 5,
 }: {
-  bluesky: AtpAgent;
+  bluesky: Agent;
   actor: string;
   batchSize?: number;
 }): AsyncGenerator<Post, void, undefined> {

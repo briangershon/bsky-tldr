@@ -1,12 +1,10 @@
-import AtpAgent from '@atproto/api';
+import { Agent, CredentialSession } from '@atproto/api';
 import { describe, expect, it, vi } from 'vitest';
 import type { Follow, Post } from '../lib/bsky-tldr';
 import { getDailyPostsFromFollows } from '../lib/getDailyPostsFromFollows';
 
-// create a vitest mock for the bluesky object
-const bluesky = new AtpAgent({
-  service: 'https://bsky.social',
-});
+const session = new CredentialSession(new URL('https://bsky.social'));
+const bluesky = new Agent(session);
 
 describe('getDailyPostsFromFollows', () => {
   const mockFollow: Follow = {

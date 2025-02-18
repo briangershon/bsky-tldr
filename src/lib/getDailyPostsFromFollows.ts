@@ -1,4 +1,4 @@
-import AtpAgent from '@atproto/api';
+import { Agent } from '@atproto/api';
 import { Follow, Post } from './bsky-tldr';
 
 export interface AuthorFeed {
@@ -30,7 +30,7 @@ export async function getDailyPostsFromFollows({
   retrieveFollows,
   retrieveAuthorFeed,
 }: {
-  bluesky: AtpAgent;
+  bluesky: Agent;
   sourceActor: string;
   targetDate: string;
   retrieveFollows: ({
@@ -38,7 +38,7 @@ export async function getDailyPostsFromFollows({
     actor,
     batchSize,
   }: {
-    bluesky: AtpAgent;
+    bluesky: Agent;
     actor: string;
     batchSize?: number;
   }) => AsyncGenerator<Follow, void, undefined>;
@@ -47,7 +47,7 @@ export async function getDailyPostsFromFollows({
     actor,
     batchSize,
   }: {
-    bluesky: AtpAgent;
+    bluesky: Agent;
     actor: string;
     batchSize?: number;
   }) => AsyncGenerator<Post, void, undefined>;

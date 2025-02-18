@@ -1,11 +1,11 @@
-import { AtpAgent } from '@atproto/api';
+import { Agent, CredentialSession } from '@atproto/api';
 import 'dotenv/config';
 import {
-  retrieveAuthorFeedGenerator,
-  retrieveFollowsGenerator,
   DailyPostsFromFollowsResponse,
   getDailyPostsFromFollows,
   Post,
+  retrieveAuthorFeedGenerator,
+  retrieveFollowsGenerator,
   uriToUrl,
 } from '../index';
 
@@ -20,14 +20,14 @@ async function buildDailyPostsFromFollows({
   sourceActor: string;
   targetDate: string;
 }): Promise<DailyPostsFromFollowsResponse> {
-  const bluesky = new AtpAgent({
-    service: 'https://bsky.social',
-  });
+  const session = new CredentialSession(new URL('https://bsky.social'));
 
-  await bluesky.login({
+  await session.login({
     identifier: process.env.BLUESKY_USERNAME!,
     password: process.env.BLUESKY_PASSWORD!,
   });
+
+  const bluesky = new Agent(session);
 
   return getDailyPostsFromFollows({
     bluesky,
