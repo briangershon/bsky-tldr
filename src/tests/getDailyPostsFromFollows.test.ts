@@ -17,6 +17,7 @@ describe('getDailyPostsFromFollows', () => {
     content: 'Test post',
     createdAt: '2024-02-04T12:00:00Z',
     isRepost: false,
+    links: [],
   };
 
   // Helper function to create async generator
@@ -96,6 +97,76 @@ describe('getDailyPostsFromFollows', () => {
         [mockFollow.did]: {
           handle: mockFollow.handle,
           posts: [mockPost],
+        },
+      },
+    });
+  });
+
+  it('should return follows with posts for the target date (+08:00 offset, after start of timezone)', async () => {
+    const startOfDayPost: Post = {
+      uri: 'at://did:plc:1234/app.bsky.feed.post/1234',
+      content: 'Test post',
+      createdAt: '2024-02-03T16:00:00Z',
+      isRepost: false,
+      links: [],
+    };
+
+    const mockRetrieveFollows = vi.fn(() =>
+      createAsyncGenerator<Follow>([mockFollow])
+    );
+    const mockRetrieveAuthorFeed = vi.fn(() =>
+      createAsyncGenerator<Post>([startOfDayPost])
+    );
+
+    const result = await getDailyPostsFromFollows({
+      bluesky,
+      sourceActor: 'did:plc:test',
+      targetDate: '20240204',
+      timezoneOffset: 8,
+      retrieveFollows: mockRetrieveFollows,
+      retrieveAuthorFeed: mockRetrieveAuthorFeed,
+    });
+
+    expect(result).toEqual({
+      follows: {
+        [mockFollow.did]: {
+          handle: mockFollow.handle,
+          posts: [startOfDayPost],
+        },
+      },
+    });
+  });
+
+  it('should return follows with posts for the target date (+08:00 offset, before end of timezone)', async () => {
+    const endOfDayPost: Post = {
+      uri: 'at://did:plc:1234/app.bsky.feed.post/1234',
+      content: 'Test post',
+      createdAt: '2024-02-04T15:59:59Z',
+      isRepost: false,
+      links: [],
+    };
+
+    const mockRetrieveFollows = vi.fn(() =>
+      createAsyncGenerator<Follow>([mockFollow])
+    );
+    const mockRetrieveAuthorFeed = vi.fn(() =>
+      createAsyncGenerator<Post>([endOfDayPost])
+    );
+
+    const result = await getDailyPostsFromFollows({
+      bluesky,
+      sourceActor: 'did:plc:test',
+      targetDate: '20240204',
+      timezoneOffset: 8,
+      retrieveFollows: mockRetrieveFollows,
+      retrieveAuthorFeed: mockRetrieveAuthorFeed,
+    });
+
+    expect(result).toEqual({
+      follows: {
+        [mockFollow.did]: {
+          handle: mockFollow.handle,
+          posts: [endOfDayPost],
         },
       },
     });

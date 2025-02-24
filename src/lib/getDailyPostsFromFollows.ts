@@ -1,5 +1,6 @@
 import { Agent } from '@atproto/api';
 import { Follow, Post } from './bsky-tldr';
+import { earlierThenTargetDate, withinTargetDate } from './target-date';
 
 export interface AuthorFeed {
   handle: string;
@@ -27,12 +28,14 @@ export async function getDailyPostsFromFollows({
   bluesky,
   sourceActor,
   targetDate,
+  timezoneOffset = 0,
   retrieveFollows,
   retrieveAuthorFeed,
 }: {
   bluesky: Agent;
   sourceActor: string;
   targetDate: string;
+  timezoneOffset?: number;
   retrieveFollows: ({
     bluesky,
     actor,
@@ -54,13 +57,6 @@ export async function getDailyPostsFromFollows({
 }): Promise<DailyPostsFromFollowsResponse> {
   const follows: DailyPostsFromFollows = {};
 
-  // Convert targetDate to start and end of day in ISO format
-  const year = targetDate.slice(0, 4);
-  const month = targetDate.slice(4, 6);
-  const day = targetDate.slice(6, 8);
-  const startOfDay = new Date(`${year}-${month}-${day}T00:00:00Z`).getTime();
-  const endOfDay = new Date(`${year}-${month}-${day}T23:59:59.999Z`).getTime();
-
   // Retrieve all follows
   for await (const follow of retrieveFollows({ bluesky, actor: sourceActor })) {
     follows[follow.did] = {
@@ -75,15 +71,15 @@ export async function getDailyPostsFromFollows({
 
     // Collect posts for the author
     for await (const post of retrieveAuthorFeed({ bluesky, actor: did })) {
-      const postTime = new Date(post.createdAt).getTime();
+      const postTime = new Date(post.createdAt);
 
-      // If post is from before target date, we can stop processing
-      if (postTime < startOfDay) {
+      // If post is from before target date, we can stop processing posts for this author
+      if (earlierThenTargetDate(postTime, targetDate, timezoneOffset)) {
         break;
       }
 
       // Only include posts from target date (between start and end of day)
-      if (postTime >= startOfDay && postTime <= endOfDay) {
+      if (withinTargetDate(postTime, targetDate, timezoneOffset)) {
         posts.push(post);
       }
     }
