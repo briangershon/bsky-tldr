@@ -42,13 +42,15 @@ Here's the data structure built with our `getDailyPostsFromFollows` library func
           "uri": "at://did:plc:oeio7zuhrsvmlyhia7e44nk6/app.bsky.feed.post/3lgzvm46vhu2c",
           "content": "TIL about process.exitCode = 1;\n\nUseful if you want to mark a process as failed without immediately exiting it",
           "createdAt": "2025-01-31T11:32:00.769Z",
-          "isRepost": false
+          "isRepost": false,
+          "links": []
         },
         {
           "uri": "at://did:plc:oeio7zuhrsvmlyhia7e44nk6/app.bsky.feed.post/3lh2c4nddwr2s",
           "content": "Is there a decent chunking algorithm library on NPM?\n\nI know Langchain and LlamaIndex have some, but figured there were probably some unbundled from frameworks.\n\nChunking: chunking text documents to be fed into a RAG system.",
           "createdAt": "2025-01-31T15:16:00.525Z",
-          "isRepost": false
+          "isRepost": false,
+          "links": []
         }
       ]
     }
@@ -56,7 +58,7 @@ Here's the data structure built with our `getDailyPostsFromFollows` library func
 }
 ```
 
-The author's `did` and `handle` are provided, along with posts that include `uri`, `content`, `createdAt`, and `isRepost`.
+The author's `did` and `handle` are provided, along with posts that include `uri`, `content`, `createdAt`, `isRepost` (`false` means it's an original by the author) and `links` which are the full links mentioned in the post.
 
 If you need more information in your app, use `@atproto/api` library directly to retrieve the author's profile using their `did`, or the full post and replies via its `uri`.
 
