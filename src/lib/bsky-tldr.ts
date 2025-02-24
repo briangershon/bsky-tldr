@@ -3,6 +3,10 @@ import {
   isReasonRepost,
   validateFeedViewPost,
 } from '@atproto/api/dist/client/types/app/bsky/feed/defs';
+import {
+  isLink,
+  Main,
+} from '@atproto/api/dist/client/types/app/bsky/richtext/facet';
 
 export interface Follow {
   did: string;
@@ -14,6 +18,7 @@ export interface Post {
   content: string;
   createdAt: string;
   isRepost: boolean;
+  links: string[];
 }
 
 export async function* retrieveFollowsGenerator({
@@ -92,11 +97,16 @@ export async function* retrieveAuthorFeedGenerator({
         }
 
         const postView = feedViewPost.post;
+        const record = postView.record;
+        const facets = record.facets as Main[];
+        const links = extractLinks(facets);
+
         yield {
           uri: postView.uri,
-          content: (postView.record.text as string) || '',
-          createdAt: (postView.record.createdAt as string) || '',
+          content: (record.text as string) || '',
+          createdAt: (record.createdAt as string) || '',
           isRepost: isReasonRepost(feedViewPost.reason),
+          links,
         };
         count++;
       }
@@ -110,4 +120,19 @@ export async function* retrieveAuthorFeedGenerator({
       }`
     );
   }
+}
+
+/**
+ * Retrieve list of links from a post's facets.
+ * @param facets
+ * @returns
+ */
+export function extractLinks(facets: Main[] | undefined): string[] {
+  if (!facets) {
+    return [];
+  }
+  return facets
+    .flatMap((facet) => facet.features)
+    .filter((feature) => isLink(feature))
+    .map((feature) => feature.uri);
 }

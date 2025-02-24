@@ -17,6 +17,7 @@ describe('getDailyPostsFromFollows', () => {
     content: 'Test post',
     createdAt: '2024-02-04T12:00:00Z',
     isRepost: false,
+    links: [],
   };
 
   // Helper function to create async generator
@@ -107,6 +108,7 @@ describe('getDailyPostsFromFollows', () => {
       content: 'Test post',
       createdAt: '2024-02-03T16:00:00Z',
       isRepost: false,
+      links: [],
     };
 
     const mockRetrieveFollows = vi.fn(() =>
@@ -141,6 +143,7 @@ describe('getDailyPostsFromFollows', () => {
       content: 'Test post',
       createdAt: '2024-02-04T15:59:59Z',
       isRepost: false,
+      links: [],
     };
 
     const mockRetrieveFollows = vi.fn(() =>
