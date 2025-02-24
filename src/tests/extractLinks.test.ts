@@ -15,7 +15,7 @@ describe('bsky-tldr: extractLinks()', () => {
         features: [
           {
             $type: 'app.bsky.richtext.facet#mention',
-            did: '12345',
+            did: 'did:plc:1234',
           },
         ],
       },
