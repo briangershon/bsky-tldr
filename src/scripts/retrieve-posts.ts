@@ -8,6 +8,7 @@ import {
   retrieveFollowsGenerator,
   uriToUrl,
 } from '../index';
+import { targetDateRange } from '../lib/target-date';
 
 /*
  * This function retrieves all posts for a given author's feed on a given date
@@ -16,9 +17,11 @@ import {
 async function buildDailyPostsFromFollows({
   sourceActor,
   targetDate,
+  timezoneOffset,
 }: {
   sourceActor: string;
   targetDate: string;
+  timezoneOffset?: number;
 }): Promise<DailyPostsFromFollowsResponse> {
   const session = new CredentialSession(new URL('https://bsky.social'));
 
@@ -33,6 +36,7 @@ async function buildDailyPostsFromFollows({
     bluesky,
     sourceActor,
     targetDate,
+    timezoneOffset,
     retrieveFollows: retrieveFollowsGenerator,
     retrieveAuthorFeed: retrieveAuthorFeedGenerator,
   });
@@ -41,9 +45,14 @@ async function buildDailyPostsFromFollows({
 const postsPerAuthorResponse = await buildDailyPostsFromFollows({
   sourceActor: 'brianfive.xyz',
   targetDate: '20250201',
+  timezoneOffset: -8, // posts for 2025-02-01, UTC-8, between 2025-02-01T08:00:00.000Z to 2025-02-02T07:59:59.999Z
 });
 
-console.debug(postsPerAuthorResponse);
+console.log(JSON.stringify(postsPerAuthorResponse, null, 2));
+const { startOfDay, endOfDay } = targetDateRange('20250201', -8);
+console.log(
+  `Retrieved posts for 20250201 for UTC-8: ${startOfDay.toISOString()} to ${endOfDay.toISOString()}`
+);
 
 const allPosts: Post[] = [];
 
@@ -53,5 +62,5 @@ Object.values(postsPerAuthorResponse.follows).forEach((user) => {
 });
 
 // demonstrate the uriToUrl function
-console.log(`All ${allPosts.length} post URLs:`);
+console.log(`\nAll ${allPosts.length} post URLs:`);
 console.log(allPosts.map((post) => post.uri).map(uriToUrl));
