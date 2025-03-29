@@ -91,7 +91,7 @@ jobs:
           """
 
           response = client.chat.completions.create(
-              model="gpt-4-turbo-preview",  # or whichever model you prefer
+              model="gpt-4o",
               messages=[
                   {"role": "system", "content": "You are a helpful assistant that summarizes git commits into well-structured release notes."},
                   {"role": "user", "content": prompt}
