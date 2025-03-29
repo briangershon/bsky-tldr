@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Needed for creating releases
+      contents: write
 
     steps:
       - name: Checkout code
@@ -78,6 +78,8 @@ jobs:
               print("No new commits found")
               with open("release_notes.md", "w") as f:
                   f.write("No changes in this release")
+              with open("release_title.txt", "w") as f:
+                  f.write("Maintenance Release")
               exit(0)
 
           # Generate release notes using OpenAI
@@ -105,7 +107,34 @@ jobs:
           with open("release_notes.md", "w") as f:
               f.write(release_notes)
 
-          print("Release notes generated successfully")
+          # Generate a short title summary
+          title_prompt = f"""
+          Based on these git commits, create a very short (5-7 words max) summary of the main changes for a release title.
+          Focus on the most significant changes. Be concise and informative.
+
+          Commits:
+          {commits}
+          """
+
+          title_response = client.chat.completions.create(
+              model="gpt-4o",
+              messages=[
+                  {"role": "system", "content": "You are a helpful assistant that creates concise release titles."},
+                  {"role": "user", "content": title_prompt}
+              ],
+              temperature=0.7,
+              max_tokens=50,
+          )
+
+          # Save the generated title to a file
+          release_title = title_response.choices[0].message.content.strip()
+          # Remove quotes if present
+          if release_title.startswith('"') and release_title.endswith('"'):
+              release_title = release_title[1:-1]
+          with open("release_title.txt", "w") as f:
+              f.write(release_title)
+
+          print("Release notes and title generated successfully")
           EOL
 
           # Run the Python script
@@ -117,10 +146,14 @@ jobs:
           echo "$RELEASE_NOTES" >> $GITHUB_OUTPUT
           echo "DELIMITER" >> $GITHUB_OUTPUT
 
+          # Set the release title as output
+          RELEASE_TITLE=$(cat release_title.txt)
+          echo "release_title=$RELEASE_TITLE" >> $GITHUB_OUTPUT
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release ${{ steps.curtag.outputs.CURRENT_TAG }}
+          name: '${{ steps.curtag.outputs.CURRENT_TAG }} - ${{ steps.openai.outputs.release_title }}'
           body: ${{ steps.openai.outputs.release_notes }}
           draft: false
           prerelease: false
