@@ -1,7 +1,7 @@
 {
   "name": "bsky-tldr",
   "description": "A JavaScript package for creating daily summaries of Bluesky posts for those you follow.",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "license": "MIT",
   "repository": {
     "type": "git",
