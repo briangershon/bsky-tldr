@@ -61,7 +61,8 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          python -c '
+          # Create a separate Python script file
+          cat > generate_notes.py << 'EOL'
           import os
           import openai
 
@@ -105,18 +106,22 @@ jobs:
               f.write(release_notes)
 
           print("Release notes generated successfully")
-          '
+          EOL
 
-          # Make the release notes available for the next step
-          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
-          cat release_notes.md >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          # Run the Python script
+          python generate_notes.py
+
+          # Use GitHub's recommended way to set output for multi-line values
+          RELEASE_NOTES=$(cat release_notes.md)
+          echo "release_notes<<DELIMITER" >> $GITHUB_OUTPUT
+          echo "$RELEASE_NOTES" >> $GITHUB_OUTPUT
+          echo "DELIMITER" >> $GITHUB_OUTPUT
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           name: Release ${{ steps.curtag.outputs.CURRENT_TAG }}
-          body: ${{ env.RELEASE_NOTES }}
+          body: ${{ steps.openai.outputs.release_notes }}
           draft: false
           prerelease: false
         env:
