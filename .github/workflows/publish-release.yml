@@ -1,0 +1,123 @@
+name: Auto-Release with OpenAI Summaries
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed for creating releases
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # This gets the full history for parsing commits
+
+      - name: Get previous tag
+        id: prevtag
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          echo "PREV_TAG=$PREV_TAG" >> $GITHUB_OUTPUT
+          echo "Previous tag: $PREV_TAG"
+
+      - name: Get current tag
+        id: curtag
+        run: |
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
+          echo "CURRENT_TAG=$CURRENT_TAG" >> $GITHUB_OUTPUT
+          echo "Current tag: $CURRENT_TAG"
+
+      - name: Extract commit messages
+        id: commits
+        run: |
+          if [ -z "${{ steps.prevtag.outputs.PREV_TAG }}" ]; then
+            # If there's no previous tag, get all commits up to the current tag
+            COMMITS=$(git log --pretty=format:"%h - %s" ${{ steps.curtag.outputs.CURRENT_TAG }})
+          else
+            # Get commits between the previous tag and the current tag
+            COMMITS=$(git log --pretty=format:"%h - %s" ${{ steps.prevtag.outputs.PREV_TAG }}..${{ steps.curtag.outputs.CURRENT_TAG }})
+          fi
+
+          # Save commits to a file to avoid issues with special characters in commit messages
+          echo "$COMMITS" > commits.txt
+          echo "Commit log created"
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install openai
+
+      - name: Generate release notes with OpenAI
+        id: openai
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python -c '
+          import os
+          import openai
+
+          # Initialize the OpenAI client
+          client = openai.OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
+          # Read commit messages from file
+          with open("commits.txt", "r") as f:
+              commits = f.read()
+
+          # Skip if there are no commits
+          if not commits.strip():
+              print("No new commits found")
+              with open("release_notes.md", "w") as f:
+                  f.write("No changes in this release")
+              exit(0)
+
+          # Generate release notes using OpenAI
+          prompt = f"""
+          Below is a list of git commits. Please create a well-formatted release notes summary.
+          Group the changes into categories (Features, Bug Fixes, Documentation, etc.) and provide a high-level summary.
+          Format the output in Markdown.
+
+          Commits:
+          {commits}
+          """
+
+          response = client.chat.completions.create(
+              model="gpt-4-turbo-preview",  # or whichever model you prefer
+              messages=[
+                  {"role": "system", "content": "You are a helpful assistant that summarizes git commits into well-structured release notes."},
+                  {"role": "user", "content": prompt}
+              ],
+              temperature=0.7,
+              max_tokens=1000,
+          )
+
+          # Save the generated release notes to a file
+          release_notes = response.choices[0].message.content
+          with open("release_notes.md", "w") as f:
+              f.write(release_notes)
+
+          print("Release notes generated successfully")
+          '
+
+          # Make the release notes available for the next step
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          cat release_notes.md >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ steps.curtag.outputs.CURRENT_TAG }}
+          body: ${{ env.RELEASE_NOTES }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
