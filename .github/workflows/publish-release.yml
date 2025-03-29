@@ -104,6 +104,20 @@ jobs:
 
           # Save the generated release notes to a file
           release_notes = response.choices[0].message.content
+
+          # Remove markdown code block markers if present
+          if release_notes.startswith("```markdown"):
+              release_notes = release_notes.replace("```markdown", "", 1)
+              if release_notes.endswith("```"):
+                  release_notes = release_notes[:-3]
+          elif release_notes.startswith("```"):
+              release_notes = release_notes.replace("```", "", 1)
+              if release_notes.endswith("```"):
+                  release_notes = release_notes[:-3]
+                  
+          # Strip any leading/trailing whitespace
+          release_notes = release_notes.strip()
+
           with open("release_notes.md", "w") as f:
               f.write(release_notes)
 
