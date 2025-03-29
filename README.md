@@ -124,4 +124,4 @@ After merging latest code to `main` branch:
 1. Locally, `git checkout main && git pull`
 2. `npm version patch` # or minor, or major
 3. `git push --follow-tags`
-4. Create a GitHub release
+4. A GitHub release is automatically written and published
