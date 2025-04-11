@@ -4,7 +4,11 @@ Bluesky feed overload? Too long, didn't read?
 
 Skim a daily list of posts from people you follow, or use AI/LLMs to summarize them into text you can scan or feed to an agent.
 
-[Run example](#run-example) section below for a demo of integration with this library.
+Example usage:
+
+- See the [Run Example Script](#run-example-script) section below for a demo of integration with this library.
+
+- <https://github.com/briangershon/bluesky-daily-mcp> is an application using this package.
 
 ## Installation in your application
 
@@ -62,7 +66,7 @@ The author's `did` and `handle` are provided, along with posts that include `uri
 
 If you need more information in your app, use `@atproto/api` library directly to retrieve the author's profile using their `did`, or the full post and replies via its `uri`.
 
-## Run example
+## Run Example Script
 
 1. Create a new App password in Bluesky, and provide your `BLUESKY_USERNAME` and `BLUESKY_PASSWORD` in an `.env` file in your root directory. You can create these via `Bluesky account settings > Privacy & Security > App passwords`.
 
