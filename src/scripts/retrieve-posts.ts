@@ -3,8 +3,8 @@ import 'dotenv/config';
 import {
   DailyPostsFromFollows,
   Post,
-  retrieveAuthorFeedGenerator,
-  retrieveFollowsGenerator,
+  retrieveAuthorFeed,
+  retrieveFollows,
   uriToUrl,
 } from '../index';
 import {
@@ -30,7 +30,7 @@ const bluesky = new Agent(session);
 const follows: DailyPostsFromFollows = {};
 
 // Retrieve all follows
-for await (const follow of retrieveFollowsGenerator({
+for await (const follow of retrieveFollows({
   bluesky,
   actor: SOURCE_ACTOR,
 })) {
@@ -47,7 +47,7 @@ for (const [did, followData] of Object.entries(follows)) {
   const posts: Post[] = [];
 
   // Collect posts for the author
-  for await (const post of retrieveAuthorFeedGenerator({
+  for await (const post of retrieveAuthorFeed({
     bluesky,
     actor: did,
     targetDate: TARGET_DATE,

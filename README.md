@@ -25,8 +25,8 @@ Exports from the library:
 
 There are also utility functions that wrap the AtProto pagination with JavaScript generators:
 
-- `retrieveAuthorFeedGenerator()` is a generator function to retrieve posts from an author and
-- `retrieveFollowsGenerator` is a generator function to retrieve follows from an author.
+- `retrieveAuthorFeed()` is a generator function to retrieve posts from an author and
+- `retrieveFollows` is a generator function to retrieve follows from an author.
 
 And if you want to convert post `uri` to a public URL:
 

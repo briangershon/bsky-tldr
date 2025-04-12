@@ -22,7 +22,7 @@ export interface Post {
   links: string[];
 }
 
-export async function* retrieveFollowsGenerator({
+export async function* retrieveFollows({
   bluesky,
   actor,
   batchSize = 50,
@@ -67,7 +67,7 @@ export async function* retrieveFollowsGenerator({
   }
 }
 
-export async function* retrieveAuthorFeedGenerator({
+export async function* retrieveAuthorFeed({
   bluesky,
   actor,
   batchSize = 5,
