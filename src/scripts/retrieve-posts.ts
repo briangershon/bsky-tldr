@@ -1,13 +1,18 @@
 import { Agent, CredentialSession } from '@atproto/api';
 import 'dotenv/config';
 import {
-  getDailyPostsFromFollows,
+  DailyPostsFromFollows,
   Post,
   retrieveAuthorFeedGenerator,
   retrieveFollowsGenerator,
   uriToUrl,
 } from '../index';
-import { getYesterday, targetDateRange } from '../lib/target-date';
+import {
+  earlierThenTargetDate,
+  getYesterday,
+  targetDateRange,
+  withinTargetDate,
+} from '../lib/target-date';
 
 const SOURCE_ACTOR = 'brianfive.xyz';
 const TARGET_DATE = getYesterday();
@@ -22,14 +27,58 @@ await session.login({
 
 const bluesky = new Agent(session);
 
-const postsPerAuthorResponse = await getDailyPostsFromFollows({
+const follows: DailyPostsFromFollows = {};
+
+// Retrieve all follows
+for await (const follow of retrieveFollowsGenerator({
   bluesky,
-  sourceActor: SOURCE_ACTOR,
-  targetDate: TARGET_DATE,
-  timezoneOffset: TIMEZONE_OFFSET,
-  retrieveFollows: retrieveFollowsGenerator,
-  retrieveAuthorFeed: retrieveAuthorFeedGenerator,
-});
+  actor: SOURCE_ACTOR,
+})) {
+  follows[follow.did] = {
+    handle: follow.handle,
+    posts: [],
+  };
+}
+
+console.log(`Found ${Object.keys(follows).length} follows`);
+
+// Retrieve and process posts for each follow
+for (const [did, followData] of Object.entries(follows)) {
+  const posts: Post[] = [];
+
+  // Collect posts for the author
+  let authorCount = 0;
+  for await (const post of retrieveAuthorFeedGenerator({
+    bluesky,
+    actor: did,
+  })) {
+    const postTime = new Date(post.createdAt);
+
+    // If post is from before target date, we can stop processing posts for this author
+    if (earlierThenTargetDate(postTime, TARGET_DATE, TIMEZONE_OFFSET)) {
+      break;
+    }
+
+    // Only include posts from target date (between start and end of day)
+    if (withinTargetDate(postTime, TARGET_DATE, TIMEZONE_OFFSET)) {
+      authorCount++;
+      posts.push(post);
+    }
+  }
+
+  if (authorCount > 0) {
+    console.log(
+      `${TARGET_DATE} ${TIMEZONE_OFFSET} | ${SOURCE_ACTOR} | ${authorCount
+        .toString()
+        .padStart(3, ' ')} posts | ${followData.handle}`
+    );
+  }
+
+  // Sort posts by creation time (earliest to latest)
+  followData.posts = posts.sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  );
+}
 
 const { startOfDay, endOfDay } = targetDateRange('20250201', -8);
 console.log(
@@ -37,7 +86,7 @@ console.log(
 );
 
 const allPosts: Post[] = [];
-Object.values(postsPerAuthorResponse.follows).forEach((user) => {
+Object.values(follows).forEach((user) => {
   allPosts.push(...user.posts);
 });
 
