@@ -38,6 +38,9 @@ export function withinTargetDate(
  * @returns
  */
 export function targetDateRange(yyyymmdd: string, timezoneOffset: number = 0) {
+  if (yyyymmdd.length !== 8) {
+    throw new Error('yyyymmdd must be 8 characters');
+  }
   const year = yyyymmdd.slice(0, 4);
   const month = yyyymmdd.slice(4, 6);
   const day = yyyymmdd.slice(6, 8);

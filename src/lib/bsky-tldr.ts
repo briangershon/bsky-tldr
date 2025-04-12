@@ -96,8 +96,9 @@ export async function* retrieveAuthorFeed({
       });
 
       for (const feedViewPost of data.feed) {
-        if (!validateFeedViewPost(feedViewPost)) {
-          console.info('Invalid feed view post:', feedViewPost);
+        const v = validateFeedViewPost(feedViewPost);
+        if (!v.success) {
+          // console.info('Invalid feed view post, skipping due to', v.error);
           continue;
         }
 

@@ -30,7 +30,8 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c --watch",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "coverage": "vitest run --coverage",
     "prepare": "npm run build",
     "retrievePosts": "tsx src/scripts/retrieve-posts.ts"
