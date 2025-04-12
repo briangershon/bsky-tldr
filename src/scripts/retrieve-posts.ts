@@ -1,18 +1,7 @@
 import { Agent, CredentialSession } from '@atproto/api';
 import 'dotenv/config';
-import {
-  DailyPostsFromFollows,
-  Post,
-  retrieveAuthorFeed,
-  retrieveFollows,
-  uriToUrl,
-} from '../index';
-import {
-  earlierThenTargetDate,
-  getYesterday,
-  targetDateRange,
-  withinTargetDate,
-} from '../lib/target-date';
+import { Post, retrieveAuthorFeed, retrieveFollows, uriToUrl } from '../index';
+import { getYesterday, targetDateRange } from '../lib/target-date';
 
 const SOURCE_ACTOR = 'brianfive.xyz';
 const TARGET_DATE = getYesterday();
@@ -27,29 +16,18 @@ await session.login({
 
 const bluesky = new Agent(session);
 
-const follows: DailyPostsFromFollows = {};
+const allPosts: Post[] = [];
 
-// Retrieve all follows
+// Loop through all follows for SOURCE_ACTOR
 for await (const follow of retrieveFollows({
   bluesky,
   actor: SOURCE_ACTOR,
 })) {
-  follows[follow.did] = {
-    handle: follow.handle,
-    posts: [],
-  };
-}
-
-console.log(`Found ${Object.keys(follows).length} follows`);
-
-// Retrieve and process posts for each follow
-for (const [did, followData] of Object.entries(follows)) {
+  // Loop through all posts for a follow
   const posts: Post[] = [];
-
-  // Collect posts for the author
   for await (const post of retrieveAuthorFeed({
     bluesky,
-    actor: did,
+    actor: follow.did,
     targetDate: TARGET_DATE,
     timezoneOffset: TIMEZONE_OFFSET,
   })) {
@@ -60,25 +38,17 @@ for (const [did, followData] of Object.entries(follows)) {
     console.log(
       `${TARGET_DATE} ${TIMEZONE_OFFSET} | ${SOURCE_ACTOR} | ${posts.length
         .toString()
-        .padStart(3, ' ')} posts | ${followData.handle}`
+        .padStart(3, ' ')} posts | ${follow.handle}`
     );
   }
 
-  // Sort posts by creation time (earliest to latest)
-  followData.posts = posts.sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  );
+  allPosts.push(...posts);
 }
 
 const { startOfDay, endOfDay } = targetDateRange('20250201', -8);
 console.log(
   `Retrieved posts for ${TARGET_DATE} for UTC${TIMEZONE_OFFSET}: ${startOfDay.toISOString()} to ${endOfDay.toISOString()}`
 );
-
-const allPosts: Post[] = [];
-Object.values(follows).forEach((user) => {
-  allPosts.push(...user.posts);
-});
 
 console.log(`\nAll ${allPosts.length} post URLs:`);
 console.log(allPosts.map((post) => post.uri).map(uriToUrl));
