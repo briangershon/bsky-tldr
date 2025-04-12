@@ -65,11 +65,14 @@ export async function getDailyPostsFromFollows({
     };
   }
 
+  console.log(`Found ${Object.keys(follows).length} follows`);
+
   // Retrieve and process posts for each follow
   for (const [did, followData] of Object.entries(follows)) {
     const posts: Post[] = [];
 
     // Collect posts for the author
+    let authorCount = 0;
     for await (const post of retrieveAuthorFeed({ bluesky, actor: did })) {
       const postTime = new Date(post.createdAt);
 
@@ -80,8 +83,17 @@ export async function getDailyPostsFromFollows({
 
       // Only include posts from target date (between start and end of day)
       if (withinTargetDate(postTime, targetDate, timezoneOffset)) {
+        authorCount++;
         posts.push(post);
       }
+    }
+
+    if (authorCount > 0) {
+      console.log(
+        `${targetDate} ${timezoneOffset} | ${sourceActor} | ${authorCount
+          .toString()
+          .padStart(3, ' ')} posts | ${followData.handle}`
+      );
     }
 
     // Sort posts by creation time (earliest to latest)
