@@ -47,28 +47,18 @@ for (const [did, followData] of Object.entries(follows)) {
   const posts: Post[] = [];
 
   // Collect posts for the author
-  let authorCount = 0;
   for await (const post of retrieveAuthorFeedGenerator({
     bluesky,
     actor: did,
+    targetDate: TARGET_DATE,
+    timezoneOffset: TIMEZONE_OFFSET,
   })) {
-    const postTime = new Date(post.createdAt);
-
-    // If post is from before target date, we can stop processing posts for this author
-    if (earlierThenTargetDate(postTime, TARGET_DATE, TIMEZONE_OFFSET)) {
-      break;
-    }
-
-    // Only include posts from target date (between start and end of day)
-    if (withinTargetDate(postTime, TARGET_DATE, TIMEZONE_OFFSET)) {
-      authorCount++;
-      posts.push(post);
-    }
+    posts.push(post);
   }
 
-  if (authorCount > 0) {
+  if (posts.length > 0) {
     console.log(
-      `${TARGET_DATE} ${TIMEZONE_OFFSET} | ${SOURCE_ACTOR} | ${authorCount
+      `${TARGET_DATE} ${TIMEZONE_OFFSET} | ${SOURCE_ACTOR} | ${posts.length
         .toString()
         .padStart(3, ' ')} posts | ${followData.handle}`
     );
