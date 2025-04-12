@@ -24,7 +24,7 @@ Exports from the library:
 Utility functions that wrap the AT Protocol pagination with JavaScript generators:
 
 - `retrieveFollows()` is a generator function to retrieve follows from an author.
-- `retrieveAuthorFeed()` is a generator function to retrieve posts from an author.
+- `retrieveAuthorFeed()` is a generator function to retrieve posts from an author, for a specific date.
 
 And if you want to convert post `uri` to a public URL:
 
@@ -32,7 +32,7 @@ And if you want to convert post `uri` to a public URL:
 
 ## Data Structure Example
 
-Here's the post data structure returned from our `retrieveAuthorFeed` library function for viewing posts for a specific author:
+Here's the post data structure returned from our `retrieveAuthorFeed` function for viewing posts for a specific author:
 
 ```json
 {
