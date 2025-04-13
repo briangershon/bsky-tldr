@@ -7,6 +7,7 @@ import {
   isLink,
   Main,
 } from '@atproto/api/dist/client/types/app/bsky/richtext/facet';
+import { earlierThenTargetDate, withinTargetDate } from './target-date';
 
 export interface Follow {
   did: string;
@@ -21,7 +22,7 @@ export interface Post {
   links: string[];
 }
 
-export async function* retrieveFollowsGenerator({
+export async function* retrieveFollows({
   bluesky,
   actor,
   batchSize = 50,
@@ -66,14 +67,18 @@ export async function* retrieveFollowsGenerator({
   }
 }
 
-export async function* retrieveAuthorFeedGenerator({
+export async function* retrieveAuthorFeed({
   bluesky,
   actor,
   batchSize = 5,
+  targetDate,
+  timezoneOffset = 0,
 }: {
   bluesky: Agent;
   actor: string;
   batchSize?: number;
+  targetDate: string;
+  timezoneOffset?: number;
 }): AsyncGenerator<Post, void, undefined> {
   if (!bluesky) {
     throw new Error('Bluesky client not initialized');
@@ -91,24 +96,36 @@ export async function* retrieveAuthorFeedGenerator({
       });
 
       for (const feedViewPost of data.feed) {
-        if (!validateFeedViewPost(feedViewPost)) {
-          console.info('Invalid feed view post:', feedViewPost);
+        const v = validateFeedViewPost(feedViewPost);
+        if (!v.success) {
+          // console.info('Invalid feed view post, skipping due to', v.error);
           continue;
         }
 
         const postView = feedViewPost.post;
         const record = postView.record;
-        const facets = record.facets as Main[];
-        const links = extractLinks(facets);
 
-        yield {
-          uri: postView.uri,
-          content: (record.text as string) || '',
-          createdAt: (record.createdAt as string) || '',
-          isRepost: isReasonRepost(feedViewPost.reason),
-          links,
-        };
-        count++;
+        const postTime = new Date(record.createdAt as string);
+
+        // If post is from before target date, we can stop processing posts for this author
+        if (earlierThenTargetDate(postTime, targetDate, timezoneOffset)) {
+          return;
+        }
+
+        // Only include posts from target date (between start and end of day)
+        if (withinTargetDate(postTime, targetDate, timezoneOffset)) {
+          const facets = record.facets as Main[];
+          const links = extractLinks(facets);
+
+          yield {
+            uri: postView.uri,
+            content: (record.text as string) || '',
+            createdAt: (record.createdAt as string) || '',
+            isRepost: isReasonRepost(feedViewPost.reason),
+            links,
+          };
+          count++;
+        }
       }
 
       cursor = data.cursor;

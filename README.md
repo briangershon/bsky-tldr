@@ -21,12 +21,10 @@ npm install bsky-tldr
 
 Exports from the library:
 
-`getDailyPostsFromFollows` is the main function to retrieve daily posts from follows. See Data Structure Example below.
+Utility functions that wrap the AT Protocol pagination with JavaScript generators:
 
-There are also utility functions that wrap the AtProto pagination with JavaScript generators:
-
-- `retrieveAuthorFeedGenerator()` is a generator function to retrieve posts from an author and
-- `retrieveFollowsGenerator` is a generator function to retrieve follows from an author.
+- `retrieveFollows()` is a generator function to retrieve follows from an author.
+- `retrieveAuthorFeed()` is a generator function to retrieve posts from an author, for a specific date.
 
 And if you want to convert post `uri` to a public URL:
 
@@ -34,35 +32,19 @@ And if you want to convert post `uri` to a public URL:
 
 ## Data Structure Example
 
-Here's the data structure built with our `getDailyPostsFromFollows` library function for viewing posts from your follows. If you're only following 1 user, and they had two posts on January 31, 2025:
+Here's the post data structure returned from our `retrieveAuthorFeed` function for viewing posts for a specific author:
 
 ```json
 {
-  "follows": {
-    "did:plc:oeio7zuhrsvmlyhia7e44nk6": {
-      "handle": "mattpocock.com",
-      "posts": [
-        {
-          "uri": "at://did:plc:oeio7zuhrsvmlyhia7e44nk6/app.bsky.feed.post/3lgzvm46vhu2c",
-          "content": "TIL about process.exitCode = 1;\n\nUseful if you want to mark a process as failed without immediately exiting it",
-          "createdAt": "2025-01-31T11:32:00.769Z",
-          "isRepost": false,
-          "links": []
-        },
-        {
-          "uri": "at://did:plc:oeio7zuhrsvmlyhia7e44nk6/app.bsky.feed.post/3lh2c4nddwr2s",
-          "content": "Is there a decent chunking algorithm library on NPM?\n\nI know Langchain and LlamaIndex have some, but figured there were probably some unbundled from frameworks.\n\nChunking: chunking text documents to be fed into a RAG system.",
-          "createdAt": "2025-01-31T15:16:00.525Z",
-          "isRepost": false,
-          "links": []
-        }
-      ]
-    }
-  }
+  "uri": "at://did:plc:oeio7zuhrsvmlyhia7e44nk6/app.bsky.feed.post/3lgzvm46vhu2c",
+  "content": "TIL about process.exitCode = 1;\n\nUseful if you want to mark a process as failed without immediately exiting it",
+  "createdAt": "2025-01-31T11:32:00.769Z",
+  "isRepost": false,
+  "links": []
 }
 ```
 
-The author's `did` and `handle` are provided, along with posts that include `uri`, `content`, `createdAt`, `isRepost` (`false` means it's an original by the author) and `links` which are the full links mentioned in the post.
+Posts that include `uri`, `content`, `createdAt`, `isRepost` (`false` means it's an original by the author) and `links` which are the full links mentioned in the post.
 
 If you need more information in your app, use `@atproto/api` library directly to retrieve the author's profile using their `did`, or the full post and replies via its `uri`.
 
@@ -77,14 +59,7 @@ BLUESKY_PASSWORD=
 
 2. Update script:
 
-First change `sourceActor` and `targetDate` in `./src/scripts/retrieve-posts.ts` to your Bluesky handle or `did`, and a date in `yyyymmdd` format.
-
-```javascript
-const postsPerAuthorResponse = await buildDailyPostsFromFollows({
-  sourceActor: 'brianfive.xyz', // or 'did:plc:3cgdoyodzdnhugjjrazljkzq'
-  targetDate: '20250201',
-});
-```
+Change `SOURCE_ACTOR`, `TARGET_DATE` and `TIMEZONE_OFFSET` in `./src/scripts/retrieve-posts.ts` to your Bluesky handle or `did`, and a date in `yyyymmdd` format.
 
 3. Run the script:
 

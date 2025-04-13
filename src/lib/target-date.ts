@@ -38,6 +38,9 @@ export function withinTargetDate(
  * @returns
  */
 export function targetDateRange(yyyymmdd: string, timezoneOffset: number = 0) {
+  if (yyyymmdd.length !== 8) {
+    throw new Error('yyyymmdd must be 8 characters');
+  }
   const year = yyyymmdd.slice(0, 4);
   const month = yyyymmdd.slice(4, 6);
   const day = yyyymmdd.slice(6, 8);
@@ -65,4 +68,17 @@ export function targetDateRange(yyyymmdd: string, timezoneOffset: number = 0) {
  */
 function isValidDate(date: Date) {
   return date instanceof Date && !isNaN(date.getTime());
+}
+
+/**
+ *
+ * @returns yesterday's date in YYYYMMDD format
+ */
+export function getYesterday() {
+  const today = new Date();
+  const yesterday = new Date(today.getTime() - 86400000);
+  const year = yesterday.getFullYear();
+  const month = String(yesterday.getMonth() + 1).padStart(2, '0');
+  const day = String(yesterday.getDate()).padStart(2, '0');
+  return `${year}${month}${day}`;
 }
