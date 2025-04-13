@@ -1,6 +1,6 @@
 # bsky-tldr
 
-Retrieve your daily Bluesky feed as simplified JSON, perfect for building feed readers, content aggregators, or AI-powered summarization tools.
+Retrieve your daily Bluesky feed as simplified JSON, perfect for building feed readers or AI-powered summarization tools.
 
 For example [Building an MCP Server to Explore My Bluesky Feed](https://www.briangershon.com/blog/bluesky-daily-mcp-server/) with code available at <https://github.com/briangershon/bluesky-daily-mcp>.
 
