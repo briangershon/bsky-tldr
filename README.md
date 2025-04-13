@@ -1,36 +1,64 @@
 # bsky-tldr
 
-Bluesky feed overload? Too long, didn't read?
+Retrieve your daily Bluesky feed as simplified JSON, perfect for building feed readers or AI-powered summarization tools.
 
-Skim a daily list of posts from people you follow, or use AI/LLMs to summarize them into text you can scan or feed to an agent.
+For example [Building an MCP Server to Explore My Bluesky Feed](https://www.briangershon.com/blog/bluesky-daily-mcp-server/) with code available at <https://github.com/briangershon/bluesky-daily-mcp>.
 
-Example usage:
+## Features
 
-- See the [Run Example Script](#run-example-script) section below for a demo of integration with this library.
+- Posts are retrieved for a specific day, with ability to specify the timezone offset.
+- Posts from Bluesky feed are in a simplified JSON format.
+- API:
+  - `retrieveFollows()` retrieves follows from an author.
+  - `retrieveAuthorFeed()` retrieves posts from an author, for a specific day.
+  - `uriToUrl` converts a post uri to a public url to view post on the web.
 
-- <https://github.com/briangershon/bluesky-daily-mcp> is an application using this package.
+Information returned for each post:
 
-## Installation in your application
+```json
+{
+  "uri": "at://did:plc:oeio7zuhrsvmlyhia7e44nk6/app.bsky.feed.post/3lgzvm46vhu2c",
+  "content": "TIL about process.exitCode = 1;\n\nUseful if you want to mark a process as failed without immediately exiting it",
+  "createdAt": "2025-01-31T11:32:00.769Z",
+  "isRepost": false,
+  "links": ["https://example.com"]
+}
+```
+
+## How to integrate into your own project
+
+Walk through the working code that retrieves posts for follows in `./scripts/retrieve-posts.ts`.
+
+How to run it:
+
+1. Create a new App password in Bluesky, and provide your `BLUESKY_USERNAME` and `BLUESKY_PASSWORD` in an `.env` file in your root directory. You can create these via `Bluesky account settings > Privacy & Security > App passwords`.
+
+```bash
+BLUESKY_USERNAME=
+BLUESKY_PASSWORD=
+```
+
+2. Update script
+
+Change `SOURCE_ACTOR`, `TARGET_DATE` and `TIMEZONE_OFFSET` in `./src/scripts/retrieve-posts.ts` to your Bluesky handle or `did`, a date in `yyyymmdd` format and a timezone offset in hours (e.g. `-8` for PST).
+
+3. Run the script
+
+```bash
+npm install
+npm run retrievePosts
+```
+
+## How to integrate into your own project
 
 ```bash
 npm install @atproto/api
 npm install bsky-tldr
 ```
 
-## API
+Grab sample code from `./scripts/retrieve-posts.ts`.
 
-Exports from the library:
-
-Utility functions that wrap the AT Protocol pagination with JavaScript generators:
-
-- `retrieveFollows()` is a generator function to retrieve follows from an author.
-- `retrieveAuthorFeed()` is a generator function to retrieve posts from an author, for a specific date.
-
-And if you want to convert post `uri` to a public URL:
-
-- `uriToUrl` is a utility function to convert a post uri to a public url to view post on the web.
-
-## Data Structure Example
+## Data Structure
 
 Here's the post data structure returned from our `retrieveAuthorFeed` function for viewing posts for a specific author:
 
@@ -48,27 +76,7 @@ Posts that include `uri`, `content`, `createdAt`, `isRepost` (`false` means it's
 
 If you need more information in your app, use `@atproto/api` library directly to retrieve the author's profile using their `did`, or the full post and replies via its `uri`.
 
-## Run Example Script
-
-1. Create a new App password in Bluesky, and provide your `BLUESKY_USERNAME` and `BLUESKY_PASSWORD` in an `.env` file in your root directory. You can create these via `Bluesky account settings > Privacy & Security > App passwords`.
-
-```bash
-BLUESKY_USERNAME=
-BLUESKY_PASSWORD=
-```
-
-2. Update script:
-
-Change `SOURCE_ACTOR`, `TARGET_DATE` and `TIMEZONE_OFFSET` in `./src/scripts/retrieve-posts.ts` to your Bluesky handle or `did`, and a date in `yyyymmdd` format.
-
-3. Run the script:
-
-```bash
-npm install
-npm run retrievePosts
-```
-
-## Help for Contributors
+## Help for Contributors to this project
 
 ### Local Development with watch mode
 
@@ -80,7 +88,7 @@ npm run dev
 ### Run tests or coverage reports
 
 ```bash
-npm test
+npm run test:watch
 npm run coverage
 ```
 
