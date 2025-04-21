@@ -27,6 +27,9 @@
       "import": "./dist/index.js"
     }
   },
+  "engines": {
+    "node": ">=16"
+  },
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c --watch",
@@ -37,7 +40,7 @@
     "retrievePosts": "tsx src/scripts/retrieve-posts.ts"
   },
   "dependencies": {
-    "@atproto/api": "^0.14.1"
+    "@atproto/api": "^0.15.3"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.2",
@@ -46,13 +49,13 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.2",
     "@types/node": "^22.9.0",
-    "@vitest/coverage-v8": "3.0.4",
+    "@vitest/coverage-v8": "^3.1.1",
     "dotenv": "^16.4.7",
     "rollup": "^4.34.0",
     "rollup-plugin-dts": "^6.1.1",
     "tslib": "^2.8.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
-    "vitest": "^3.0.4"
+    "vitest": "^3.1.1"
   }
 }
